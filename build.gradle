@@ -1,6 +1,7 @@
 plugins {
     id 'idea'
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id 'org.springframework.boot' version '2.6.6' apply false
     id 'com.github.johnrengelman.shadow' version '7.1.2' apply false
 }
 
@@ -24,8 +25,11 @@ allprojects {
     apply plugin: "io.spring.dependency-management"
     dependencyManagement {
         dependencies {
+            imports {
+                mavenBom("org.springframework.boot:spring-boot-dependencies:2.6.6")
+            }
             dependency "com.google.guava:guava:${Versions.guava}"
+
         }
     }
 }
-
