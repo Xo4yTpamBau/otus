@@ -5,6 +5,12 @@ public class MyClassImpl implements MyClassInterface {
 
     @Override
     @Log
+    public void secureAccess() {
+
+    }
+
+    @Override
+    @Log
     public void secureAccess(String param) {
 
     }

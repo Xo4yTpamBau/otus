@@ -1,8 +1,8 @@
 package ru.otus.aop.logger;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
@@ -14,8 +14,8 @@ class Ioc {
     private Ioc() {
     }
 
-    static MyClassInterface createMyClass() {
-        InvocationHandler handler = new DemoInvocationHandler(new MyClassImpl());
+    static MyClassInterface createMyClass(MyClassInterface classes) {
+        InvocationHandler handler = new DemoInvocationHandler(classes);
         return (MyClassInterface) Proxy.newProxyInstance(Ioc.class.getClassLoader(),
                 new Class<?>[]{MyClassInterface.class}, handler);
     }
@@ -33,43 +33,56 @@ class Ioc {
             Class<? extends MyClassInterface> aClass = myClass.getClass();
             return Arrays
                     .stream(aClass.getDeclaredMethods())
-                    .filter(this::existLogAnnotation)
+                    .filter(method -> method.getAnnotation(Log.class) != null)
                     .toList();
-        }
-
-        private boolean existLogAnnotation(Method meth) {
-            for (Annotation annotation : meth.getAnnotations()) {
-                if (Log.class.equals(annotation.annotationType())) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (isLogging(method, args)) {
+            if (isLogging(method)) {
                 System.out.printf(buildLogString(method, args));
             }
             return method.invoke(myClass, args);
         }
 
-        private boolean isLogging(Method method, Object[] args) {
+        private boolean isLogging(Method method) {
             for (Method logMethod : logMethods) {
-                if (method.getName().equals(logMethod.getName()) &&
-                        logMethod.getParameterCount() == args.length) {
-                    return true;
+                if (method.getName().equals(logMethod.getName())) {
 
+                    Parameter[] paramsLogMeth = logMethod.getParameters();
+                    Parameter[] paramsInvokeMeth = method.getParameters();
+                    if (paramsLogMeth.length != paramsInvokeMeth.length) {
+                        continue;
+                    }
+                    if (paramsInvokeMeth.length == 0) {
+                        return true;
+                    }
+                    if (equalsParams(paramsLogMeth, paramsInvokeMeth)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static boolean equalsParams(Parameter[] paramsLogMeth, Parameter[] paramsInvokeMeth) {
+            for (int i = 0; i < paramsLogMeth.length; i++) {
+                if (!paramsLogMeth[i].getType().equals(paramsInvokeMeth[i].getType())) {
+                    break;
+                }
+                if (i == paramsLogMeth.length - 1) {
+                    return true;
                 }
             }
             return false;
         }
 
         private String buildLogString(Method method, Object[] args) {
-            String stringArgs = Arrays
-                    .stream(args)
-                    .map(Objects::toString)
-                    .collect(Collectors.joining(","));
+            String stringArgs = args == null ? "" :
+                    Arrays
+                            .stream(args)
+                            .map(Objects::toString)
+                            .collect(Collectors.joining(","));
             return String.format("executed method: %s, param: %s\n", method.getName(), stringArgs);
         }
 
