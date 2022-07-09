@@ -33,7 +33,7 @@ class Ioc {
             Class<? extends MyClassInterface> aClass = myClass.getClass();
             return Arrays
                     .stream(aClass.getDeclaredMethods())
-                    .filter(method -> method.getAnnotation(Log.class) != null)
+                    .filter(method -> method.isAnnotationPresent(Log.class))
                     .toList();
         }
 
