@@ -23,7 +23,7 @@ public class FileSerializer implements Serializer {
             String s = new ObjectMapper().writeValueAsString(data);
             Files.write(Path.of(fileName), s.getBytes());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FileProcessException(e);
         }
     }
 }

@@ -1,10 +1,12 @@
 package ru.otus.dataprocessor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.json.Json;
 import ru.otus.model.Measurement;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,15 +22,15 @@ public class ResourcesFileLoader implements Loader {
 
     public List<Measurement> load() {
         //читает файл, парсит и возвращает результат
-        try {
-            List<HashMap> list = new ObjectMapper().readValue(new File(fileName), List.class);
+        try (InputStream resourceAsStream = ResourcesFileLoader.class.getClassLoader().getResourceAsStream(fileName)) {
+            List<HashMap> list = new ObjectMapper().readValue(resourceAsStream, List.class);
 
             return list
                     .stream()
                     .map(o -> new Measurement((String) o.get("name"), (Double) o.get("value")))
                     .toList();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FileProcessException(e);
         }
     }
 }
