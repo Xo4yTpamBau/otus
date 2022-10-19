@@ -6,7 +6,7 @@ import ru.otus.model.Banknote;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RepositoryBanknoteImpl implements RepositoryBanknote {
+public class BanknoteDaoImpl implements BanknoteDao {
 
     private final List<Banknote> fiveBanknotes = new ArrayList<>();
     private final List<Banknote> tenBanknotes = new ArrayList<>();
@@ -38,29 +38,36 @@ public class RepositoryBanknoteImpl implements RepositoryBanknote {
     @Override
     public List<Banknote> takeMoney(long sum) {
         var result = new ArrayList<Banknote>();
-        if (NominalValue.FIFTY.getValue() <= sum && !fiftyBanknotes.isEmpty()) {
-            result.add(fiftyBanknotes.get(0));
-            fiftyBanknotes.remove(0);
-            result.addAll(takeMoney(sum - NominalValue.FIFTY.getValue()));
-        }
-        if (NominalValue.TWENTY.getValue() <= sum && !twentyBanknotes.isEmpty()) {
-            result.add(twentyBanknotes.get(0));
-            twentyBanknotes.remove(0);
-            result.addAll(takeMoney(sum - NominalValue.TWENTY.getValue()));
-        }
-        if (NominalValue.TEN.getValue() <= sum && !tenBanknotes.isEmpty()) {
-            result.add(tenBanknotes.get(0));
-            tenBanknotes.remove(0);
-            result.addAll(takeMoney(sum - NominalValue.TEN.getValue()));
-        }
-        if (NominalValue.FIVE.getValue() <= sum && !fiveBanknotes.isEmpty()) {
-            result.add(fiveBanknotes.get(0));
-            fiveBanknotes.remove(0);
-            result.addAll(takeMoney(sum - NominalValue.FIVE.getValue()));
-        }
-        if (sumCell(result) != sum) {
-            result.forEach(this::save);
-            return new ArrayList<>();
+        while (true) {
+            if (NominalValue.FIFTY.getValue() <= sum && !fiftyBanknotes.isEmpty()) {
+                result.add(fiftyBanknotes.get(0));
+                fiftyBanknotes.remove(0);
+                sum = sum - NominalValue.FIFTY.getValue();
+                continue;
+            }
+            if (NominalValue.TWENTY.getValue() <= sum && !twentyBanknotes.isEmpty()) {
+                result.add(twentyBanknotes.get(0));
+                twentyBanknotes.remove(0);
+                sum = sum - NominalValue.TWENTY.getValue();
+                continue;
+            }
+            if (NominalValue.TEN.getValue() <= sum && !tenBanknotes.isEmpty()) {
+                result.add(tenBanknotes.get(0));
+                tenBanknotes.remove(0);
+                sum = sum - NominalValue.TEN.getValue();
+                continue;
+            }
+            if (NominalValue.FIVE.getValue() <= sum && !fiveBanknotes.isEmpty()) {
+                result.add(fiveBanknotes.get(0));
+                fiveBanknotes.remove(0);
+                sum = sum - NominalValue.FIVE.getValue();
+                continue;
+            }
+            if (sum != 0) {
+                result.forEach(this::save);
+                return new ArrayList<>();
+            }
+            break;
         }
         return result;
     }

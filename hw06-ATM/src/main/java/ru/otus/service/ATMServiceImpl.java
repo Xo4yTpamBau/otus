@@ -1,8 +1,8 @@
 package ru.otus.service;
 
 import ru.otus.constant.NominalValue;
-import ru.otus.dao.RepositoryBanknote;
-import ru.otus.dao.RepositoryBanknoteImpl;
+import ru.otus.dao.BanknoteDao;
+import ru.otus.dao.BanknoteDaoImpl;
 import ru.otus.model.Banknote;
 
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class ATMServiceImpl implements ATMService {
 
     private final Scanner scan = new Scanner(System.in);
-    private final RepositoryBanknote repositoryBanknote = new RepositoryBanknoteImpl();
+    private final BanknoteDao repositoryBanknote = new BanknoteDaoImpl();
 
     @Override
     public void startSession() {
