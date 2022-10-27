@@ -7,5 +7,7 @@ include 'hw05-aop_logger'
 include 'hw06-ATM'
 include 'hw07-handleMessage'
 include 'hw08-json'
+include 'hw09-jdbc:demo'
+include 'hw09-jdbc:homework'
 
 
