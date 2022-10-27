@@ -50,14 +50,16 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
             for (Field field : entityClassMetaData.getAllFields()) {
                 t
                         .getClass()
-                        .getMethod("set" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1), field.getType())
-                        .invoke(t, field.getType().equals(Long.class)
-                                ? rs.getLong(field.getName().toLowerCase())
-                                : rs.getString(field.getName().toLowerCase()));
+                        .getMethod(buildSetName(field), field.getType())
+                        .invoke(t, rs.getObject(field.getName().toLowerCase()));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static String buildSetName(Field field) {
+        return "set" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
     }
 
 
@@ -108,10 +110,14 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
         try {
             return client
                     .getClass()
-                    .getMethod("get" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1))
+                    .getMethod(buildGetName(field))
                     .invoke(client);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static String buildGetName(Field field) {
+        return "get" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
     }
 }

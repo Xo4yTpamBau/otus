@@ -9,12 +9,12 @@ import java.util.List;
 
 public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
 
-    final String name;
-    final Constructor<T> constructor;
+    private final String name;
+    private final Constructor<T> constructor;
 
-    Field idField;
-    final List<Field> fieldsWithoutId = new ArrayList<>();
-    final List<Field> allFields = new ArrayList<>();
+    private Field idField;
+    private final List<Field> fieldsWithoutId = new ArrayList<>();
+    private final List<Field> allFields = new ArrayList<>();
 
 
     public EntityClassMetaDataImpl(Class<T> type) {
