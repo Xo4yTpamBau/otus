@@ -11,6 +11,9 @@ public class Phone {
     @Column(name = "number")
     private String number;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Client client;
+
     public Phone() {
     }
 
@@ -33,5 +36,13 @@ public class Phone {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 }

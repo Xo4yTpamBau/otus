@@ -20,15 +20,13 @@ public class Client {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "client_id")
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Phone> phones;
 
     public Client() {
     }
 
     public Client(String name) {
-        this.id = null;
         this.name = name;
     }
 
@@ -42,6 +40,7 @@ public class Client {
         this.name = name;
         this.address = address;
         this.phones = phones;
+        phones.forEach(phone -> phone.setClient(this));
     }
 
     @Override
