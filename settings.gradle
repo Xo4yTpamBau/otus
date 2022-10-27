@@ -9,5 +9,6 @@ include 'hw07-handleMessage'
 include 'hw08-json'
 include 'hw09-jdbc:demo'
 include 'hw09-jdbc:homework'
+include 'hw10-hibernate'
 
 
