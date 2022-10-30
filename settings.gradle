@@ -10,5 +10,6 @@ include 'hw08-json'
 include 'hw09-jdbc:demo'
 include 'hw09-jdbc:homework'
 include 'hw10-hibernate'
+include 'hw15-synchronized'
 include 'hw11-cache'
 
