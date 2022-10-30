@@ -6,7 +6,6 @@ import otus.appcontainer.api.AppComponentsContainerConfig;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.*;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
@@ -22,37 +21,43 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         try {
             checkConfigClass(configClass);
             Object instanceConfigClass = configClass.getConstructors()[0].newInstance();
-            Method[] methods = configClass.getDeclaredMethods();
-            for (int order = 0; appComponents.size() != methods.length; order++) {
-                for (Method method : methods) {
-                    AppComponent annotation = method.getAnnotation(AppComponent.class);
-                    if (order == annotation.order()) {
-                        Object resultInvokeMethod = invokeMethod(instanceConfigClass, method);
-                        appComponents.add(resultInvokeMethod);
-                        appComponentsByName.put(annotation.name().toLowerCase(), resultInvokeMethod);
-                    }
+
+            for (Method method : sortMethodsByOrder(configClass)) {
+                AppComponent annotation = method.getAnnotation(AppComponent.class);
+
+                if (appComponentsByName.containsKey(annotation.name())) {
+                    throw new RuntimeException(String.format("Bean with this name(%s) already exists", annotation.name()));
                 }
+
+                Object resultInvokeMethod = invokeMethod(instanceConfigClass, method);
+                appComponents.add(resultInvokeMethod);
+                appComponentsByName.put(annotation.name(), resultInvokeMethod);
             }
+
         } catch (Exception e) {
             throw new RuntimeException();
         }
 
     }
 
-    private Object invokeMethod(Object o, Method method) throws IllegalAccessException, InvocationTargetException {
-        Parameter[] parameters = method.getParameters();
-        Object resultInvokeMethod;
-        if (parameters.length == 0) {
-            resultInvokeMethod = method.invoke(o);
-        } else {
-            Object[] objects = Arrays
-                    .stream(parameters)
-                    .map(par -> appComponentsByName.get(par.getType().getSimpleName().toLowerCase()))
-                    .toArray();
-            resultInvokeMethod = method.invoke(o, objects);
+    private static List<Method> sortMethodsByOrder(Class<?> configClass) {
+        return Arrays.stream(configClass.getDeclaredMethods())
+                .sorted((o1, o2) -> {
+                    int order1 = o1.getAnnotation(AppComponent.class).order();
+                    int order2 = o2.getAnnotation(AppComponent.class).order();
+                    return Integer.compare(order1, order2);
+                }).toList();
+    }
 
-        }
-        return resultInvokeMethod;
+    private Object invokeMethod(Object o, Method method) throws IllegalAccessException, InvocationTargetException {
+        return method.invoke(o, buildArrayArgs(method));
+    }
+
+    private Object[] buildArrayArgs(Method method) {
+        return Arrays
+                .stream(method.getParameters())
+                .map(par -> getAppComponent(par.getType()))
+                .toArray();
     }
 
     private void checkConfigClass(Class<?> configClass) {
@@ -65,15 +70,13 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     public <C> C getAppComponent(Class<C> componentClass) {
         return (C) appComponents
                 .stream()
-                .filter(component ->
-                        component.getClass().equals(componentClass)
-                                || Arrays.asList(component.getClass().getInterfaces()).contains(componentClass))
+                .filter(component -> componentClass.isAssignableFrom(component.getClass()))
                 .findFirst()
                 .orElseGet(null);
     }
 
     @Override
     public <C> C getAppComponent(String componentName) {
-        return (C) appComponentsByName.get(componentName.toLowerCase());
+        return (C) appComponentsByName.get(componentName);
     }
 }
