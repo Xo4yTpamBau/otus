@@ -20,6 +20,11 @@ public class Address {
         this.street = street;
     }
 
+    @Override
+    public Address clone() {
+        return new Address(this.id, this.street);
+    }
+
     public Long getId() {
         return id;
     }

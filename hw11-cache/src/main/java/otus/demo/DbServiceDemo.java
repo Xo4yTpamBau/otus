@@ -40,6 +40,11 @@ public class DbServiceDemo {
         var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate, new MyCache<>());
         dbServiceClient.saveClient(new Client("dbServiceFirst"));
 
+        for (int i = 0; i < 10000; i++) {
+            Client client = dbServiceClient.saveClient(new Client("client"));
+            dbServiceClient.getClient(client.getId());
+        }
+
         var clientSecond = dbServiceClient.saveClient(new Client("dbServiceSecond"));
         var clientSecondSelected = dbServiceClient.getClient(clientSecond.getId())
                 .orElseThrow(() -> new RuntimeException("Client not found, id:" + clientSecond.getId()));

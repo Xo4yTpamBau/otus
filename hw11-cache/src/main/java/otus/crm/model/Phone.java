@@ -23,6 +23,11 @@ public class Phone {
         this.number = number;
     }
 
+    @Override
+    public Phone clone() {
+        return new Phone(this.id, this.number);
+    }
+
     public Long getId() {
         return id;
     }

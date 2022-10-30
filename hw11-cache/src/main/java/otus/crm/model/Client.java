@@ -45,7 +45,12 @@ public class Client {
 
     @Override
     public Client clone() {
-        return new Client(this.id, this.name, this.address, this.phones);
+        return new Client(this.id,
+                this.name,
+                this.address == null
+                        ? null
+                        : this.address.clone(),
+                this.phones.stream().map(Phone::clone).toList());
     }
 
     public Long getId() {

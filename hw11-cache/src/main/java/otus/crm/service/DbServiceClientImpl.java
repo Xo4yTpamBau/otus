@@ -44,9 +44,10 @@ public class DbServiceClientImpl implements DBServiceClient {
     @Override
     public Optional<Client> getClient(long id) {
         return transactionManager.doInReadOnlyTransaction(session -> {
-            Optional<Client> client = Optional.of(cache.get(id));
+            Optional<Client> client = Optional.ofNullable(cache.get(id));
             if (client.isEmpty()) {
                 client = clientDataTemplate.findById(session, id);
+                client.ifPresent(value -> cache.put(id, value.clone()));
             }
             log.info("client: {}", client);
             return client;
