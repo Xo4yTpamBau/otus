@@ -18,9 +18,5 @@
     <property name="hibernate.hbm2ddl.auto">create-drop</property>
     <property name="hibernate.enable_lazy_load_no_trans">false</property>
 
-<!--    <mapping class="ru.otus.crm.model.Address"/>-->
-<!--    <mapping class="ru.otus.crm.model.Client"/>-->
-<!--    <mapping class="ru.otus.crm.model.Phone"/>-->
-
   </session-factory>
 </hibernate-configuration>
