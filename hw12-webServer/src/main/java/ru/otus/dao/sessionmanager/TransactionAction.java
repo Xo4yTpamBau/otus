@@ -1,4 +1,4 @@
-package ru.otus.core.sessionmanager;
+package ru.otus.dao.sessionmanager;
 
 import org.hibernate.Session;
 import java.util.function.Function;
