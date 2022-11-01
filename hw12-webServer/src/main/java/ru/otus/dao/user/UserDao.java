@@ -1,17 +1,14 @@
-package ru.otus.dao;
+package ru.otus.dao.user;
 
 import ru.otus.model.User;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserDao {
 
     User saveUser(User user);
 
-    Optional<User> findById(long id);
-
     Optional<User> findByLogin(String login);
 
-    List<User> findAll();
+
 }

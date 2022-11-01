@@ -1,10 +1,9 @@
-package ru.otus.dao;
+package ru.otus.dao.user;
 
 import ru.otus.dao.repository.DataTemplate;
 import ru.otus.dao.sessionmanager.TransactionManager;
 import ru.otus.model.User;
 
-import java.util.List;
 import java.util.Optional;
 
 public class UserDaoImpl implements UserDao {
@@ -31,20 +30,10 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findById(long id) {
-        return transactionManager.doInReadOnlyTransaction(session -> userDataTemplate.findById(session, id));
-    }
-
-    @Override
     public Optional<User> findByLogin(String login) {
         return transactionManager
                 .doInReadOnlyTransaction(session -> userDataTemplate.findByEntityField(session, "login", login))
                 .stream()
                 .findFirst();
-    }
-
-    @Override
-    public List<User> findAll() {
-        return transactionManager.doInReadOnlyTransaction(userDataTemplate::findAll);
     }
 }

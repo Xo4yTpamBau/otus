@@ -3,11 +3,16 @@ package ru.otus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.hibernate.cfg.Configuration;
-import ru.otus.dao.UserDao;
-import ru.otus.dao.UserDaoImpl;
+import ru.otus.dao.client.ClientDao;
+import ru.otus.dao.client.ClientDaoImpl;
+import ru.otus.dao.user.UserDao;
+import ru.otus.dao.user.UserDaoImpl;
 import ru.otus.dao.repository.DataTemplateHibernate;
 import ru.otus.dao.repository.HibernateUtils;
 import ru.otus.dao.sessionmanager.TransactionManagerHibernate;
+import ru.otus.model.Address;
+import ru.otus.model.Client;
+import ru.otus.model.Phone;
 import ru.otus.model.User;
 import ru.otus.server.UsersWebServer;
 import ru.otus.server.UsersWebServerWithFilterBasedSecurity;
@@ -35,11 +40,14 @@ public class WebServerWithFilterBasedSecurityDemo {
 
     public static void main(String[] args) throws Exception {
         var configuration = new Configuration().configure(HIBERNATE_CFG_FILE);
-        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, User.class);
+        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, User.class, Client.class, Address.class, Phone.class);
 
         var transactionManager = new TransactionManagerHibernate(sessionFactory);
         var userTemplate = new DataTemplateHibernate<>(User.class);
         UserDao userDao = new UserDaoImpl(transactionManager, userTemplate);
+
+        var clientTemplate = new DataTemplateHibernate<>(Client.class);
+        ClientDao clientDao = new ClientDaoImpl(transactionManager, clientTemplate);
 
         userDao.saveUser(new User(null, "admin adminovich", "admin", "admin"));
 
@@ -48,7 +56,7 @@ public class WebServerWithFilterBasedSecurityDemo {
         UserAuthService authService = new UserAuthServiceImpl(userDao);
 
         UsersWebServer usersWebServer = new UsersWebServerWithFilterBasedSecurity(WEB_SERVER_PORT,
-                authService, userDao, gson, templateProcessor);
+                authService, clientDao, gson, templateProcessor);
 
         usersWebServer.start();
         usersWebServer.join();
