@@ -72,7 +72,8 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 .stream()
                 .filter(component -> componentClass.isAssignableFrom(component.getClass()))
                 .findFirst()
-                .orElseGet(null);
+                .orElseThrow(() -> new RuntimeException(String.format("Bean with this name(%s) not found", componentClass.getName())));
+
     }
 
     @Override
