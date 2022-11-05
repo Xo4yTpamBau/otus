@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import ru.otus.dao.client.ClientDao;
+import ru.otus.services.ClientService;
 import ru.otus.model.Client;
 import ru.otus.model.ClientDto;
 import ru.otus.services.TemplateProcessor;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class ClientServlet extends HttpServlet {
 
-    private final ClientDao clientDao;
+    private final ClientService clientDao;
     private final TemplateProcessor templateProcessor;
     private final Gson gson;
 
@@ -25,7 +25,7 @@ public class ClientServlet extends HttpServlet {
     private static final String TEMPLATE_ATTR_ALL_CLIENTS = "clients";
 
 
-    public ClientServlet(TemplateProcessor templateProcessor, ClientDao clientDao) {
+    public ClientServlet(TemplateProcessor templateProcessor, ClientService clientDao) {
         this.templateProcessor = templateProcessor;
         this.clientDao = clientDao;
         this.gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();

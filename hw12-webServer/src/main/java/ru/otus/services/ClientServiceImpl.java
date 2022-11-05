@@ -1,18 +1,17 @@
-package ru.otus.dao.client;
+package ru.otus.services;
 
 import ru.otus.dao.repository.DataTemplate;
 import ru.otus.dao.sessionmanager.TransactionManager;
 import ru.otus.model.Client;
-import ru.otus.model.User;
 
 import java.util.List;
 
-public class ClientDaoImpl implements ClientDao {
+public class ClientServiceImpl implements ClientService {
 
     private final DataTemplate<Client> clientDataTemplate;
     private final TransactionManager transactionManager;
 
-    public ClientDaoImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate) {
+    public ClientServiceImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate) {
         this.transactionManager = transactionManager;
         this.clientDataTemplate = clientDataTemplate;
     }

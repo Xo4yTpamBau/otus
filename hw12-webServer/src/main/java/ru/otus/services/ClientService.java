@@ -1,10 +1,10 @@
-package ru.otus.dao.client;
+package ru.otus.services;
 
 import ru.otus.model.Client;
 
 import java.util.List;
 
-public interface ClientDao {
+public interface ClientService {
 
     Client saveClient(Client user);
 

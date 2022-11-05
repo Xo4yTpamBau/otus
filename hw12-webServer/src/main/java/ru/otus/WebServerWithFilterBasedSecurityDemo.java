@@ -3,8 +3,9 @@ package ru.otus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.hibernate.cfg.Configuration;
-import ru.otus.dao.client.ClientDao;
-import ru.otus.dao.client.ClientDaoImpl;
+import ru.otus.dao.dbmigrations.MigrationsExecutorFlyway;
+import ru.otus.services.ClientService;
+import ru.otus.services.ClientServiceImpl;
 import ru.otus.dao.user.UserDao;
 import ru.otus.dao.user.UserDaoImpl;
 import ru.otus.dao.repository.DataTemplateHibernate;
@@ -40,6 +41,12 @@ public class WebServerWithFilterBasedSecurityDemo {
 
     public static void main(String[] args) throws Exception {
         var configuration = new Configuration().configure(HIBERNATE_CFG_FILE);
+
+        var dbUrl = configuration.getProperty("hibernate.connection.url");
+        var dbUserName = configuration.getProperty("hibernate.connection.username");
+        var dbPassword = configuration.getProperty("hibernate.connection.password");
+
+        new MigrationsExecutorFlyway(dbUrl, dbUserName, dbPassword).executeMigrations();
         var sessionFactory = HibernateUtils.buildSessionFactory(configuration, User.class, Client.class, Address.class, Phone.class);
 
         var transactionManager = new TransactionManagerHibernate(sessionFactory);
@@ -47,7 +54,7 @@ public class WebServerWithFilterBasedSecurityDemo {
         UserDao userDao = new UserDaoImpl(transactionManager, userTemplate);
 
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
-        ClientDao clientDao = new ClientDaoImpl(transactionManager, clientTemplate);
+        ClientService clientDao = new ClientServiceImpl(transactionManager, clientTemplate);
 
         userDao.saveUser(new User(null, "admin adminovich", "admin", "admin"));
 
